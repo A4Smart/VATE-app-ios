@@ -1,5 +1,4 @@
 ![Swift](https://img.shields.io/badge/Swift-3.0-orange.svg)
-![Build Status](https://travis-ci.org/wayfindrltd/wayfindr-demo-ios.svg?branch=master)
 
 # wayfindr-demo-ios
 
