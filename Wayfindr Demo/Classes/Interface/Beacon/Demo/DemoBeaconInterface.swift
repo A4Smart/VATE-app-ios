@@ -20,7 +20,7 @@ final class DemoBeaconInterface: NSObject, BeaconInterface, ESTBeaconManagerDele
     weak var delegate: BeaconInterfaceDelegate?
     
     weak var stateDelegate: BeaconInterfaceStateDelegate?
-    
+
     /// List of valid beacons that the `BeaconInterface` use for filtering.
     ///     If `nil` then the `BeaconInterface` should parse all beacons.
     var validBeacons: [BeaconIdentifier]?
@@ -36,9 +36,10 @@ final class DemoBeaconInterface: NSObject, BeaconInterface, ESTBeaconManagerDele
     
     //GIACOMO
     let beaconManager = ESTBeaconManager()
+    let locationManager = CLLocationManager()
     
     let beaconRegion = CLBeaconRegion(
-        proximityUUID: UUID(uuidString: "B9407F30-F5F8-466E-AFF9-25556B57FE6D")!,  major: 200,
+        proximityUUID: UUID(uuidString: "B9407F30-F5F8-466E-AFF9-25556B57FE6D")!,  /*major: 200,*/
         identifier: "ranged region")
     let sanMarco = CLBeaconRegion(
         proximityUUID: UUID(uuidString: "B9407F30-F5F8-466E-AFF9-25556B57FE6D")!, major:10000,
@@ -59,7 +60,10 @@ final class DemoBeaconInterface: NSObject, BeaconInterface, ESTBeaconManagerDele
         // 4. We need to request this authorization for every beacon manager
         self.beaconManager.requestAlwaysAuthorization()
         
-        if WAYDeveloperSettings.sharedInstance.showPiazzaButton {
+        let defaults = UserDefaults.standard
+        let MostraSoloSanMarco = defaults.bool(forKey: WAYDeveloperSettings.WAYDeveloperSettingsKeys.MostraSoloPiazzaButton)
+        
+        if MostraSoloSanMarco {
             self.beaconManager.startRangingBeacons(in: self.sanMarco)
         }
         else{
@@ -77,7 +81,7 @@ final class DemoBeaconInterface: NSObject, BeaconInterface, ESTBeaconManagerDele
     
     // MARK: - GET
     
-    //GIACOMO
+    //LETTURA SEGNALE BEACON
     func beaconManager( _ manager: Any, didRangeBeacons beacons: [CLBeacon],
                        in region: CLBeaconRegion) {
         //LETTURA OGGETTI BEACON DA API ESTIMOTE

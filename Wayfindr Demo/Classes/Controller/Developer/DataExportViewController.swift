@@ -155,7 +155,7 @@ extension WAYGraphNode: CSVExportable {
     func generateCSV() -> String {
         let separator = ","
         
-        return identifier + separator + "\(major)" + separator + "\(minor)" + separator + name + separator + nodeType.description + separator + "\(accuracy)"
+        return identifier + separator + "\(major)" + separator + "\(minor)" + separator + name + separator + nodeType.description
     }
     
 }

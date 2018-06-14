@@ -33,7 +33,6 @@ import AEXML
  */
 struct WAYGraphEdge {
     
-    
     // MARK: - Properties
     
     /// Identifier for the edge. Used in the GraphML representation.
@@ -48,6 +47,10 @@ struct WAYGraphEdge {
     
     /// Instructions in for travelling from the source node to the target node.
     let instructions: WAYInstructionSet
+    
+    ///GIACOMO: bussola
+    let compass : Double
+    let rssi: Int
     
     /**
      *  Attributes for the `edge` GraphML element.
@@ -65,8 +68,10 @@ struct WAYGraphEdge {
      */
     enum WAYGraphEdgeKeys: String {
         case Weight = "travel_time"
+        case Compass = "compass"
+        case Rssi = "rssi"
         
-        static let allValues = [Weight]
+        static let allValues = [Weight, Compass, Rssi]
     }
     
     
@@ -83,6 +88,8 @@ struct WAYGraphEdge {
     init?(xmlElement: AEXMLElement, languageCode: String = "en-GB") throws {
         // Temporary storage for the data elements
         var tempWeight: Double?
+        var tempCompass : Double?
+        var tempRssi : Int?
         
         // Retrieve the ID's
         guard let myID = xmlElement.attributes[WAYGraphEdgeAttributes.identifier],
@@ -104,6 +111,10 @@ struct WAYGraphEdge {
                     switch dataItemType {
                     case .Weight:
                         tempWeight = dataItem.double
+                    case .Compass:
+                        tempCompass = dataItem.double
+                    case .Rssi:
+                        tempRssi = dataItem.int
                     }
             }
             
@@ -114,8 +125,18 @@ struct WAYGraphEdge {
             throw WAYError.invalidGraphEdge
         }
         
+        guard let myCompass = tempCompass else {
+            throw WAYError.invalidGraphEdge
+        }
+        
+        guard let myRssi = tempRssi else {
+            throw WAYError.invalidGraphEdge
+        }
+        
         // Permanently store the elements
         weight = myWeight
+        compass = myCompass ?? -1000
+        rssi = myRssi ?? -1000
         
         do {
             let myInstructions = try WAYInstructionSet(xmlElement: xmlElement)
@@ -131,13 +152,36 @@ struct WAYGraphEdge {
         }
     }
     
-    init(identifier: String, sourceID: String, targetID: String, weight: Double, instructions: WAYInstructionSet) {
+    init(identifier: String, sourceID: String, targetID: String, weight: Double, instructions: WAYInstructionSet, compass: Double, rssi: Int) {
         
         self.identifier = identifier
         self.sourceID = sourceID
         self.targetID = targetID
         self.weight = weight
         self.instructions = instructions
+        self.compass = compass
+        self.rssi = rssi
     }
+    
+    /*static func beacon(beacon: WAYBeacon, isWithinRangeOf edge: WAYGraphEdge, isUsingRssi: Bool) -> Bool {
+        
+        if isUsingRssi {
+            
+            guard let beaconRssi = beacon.rssi else {
+                
+                return false
+            }
+            
+            return beaconRssi > edge.rssi
+        } else {
+            
+            guard let beaconAccuracy = beacon.accuracy else {
+                
+                return false
+            }
+            
+            return beaconAccuracy < edge.accuracy
+        }
+    }*/
     
 }

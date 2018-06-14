@@ -52,7 +52,7 @@ fileprivate func >= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 }
 
 /// Displays instructions to the user based on the current route.
-final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, BeaconInterfaceDelegate {
+final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, BeaconInterfaceDelegate, CLLocationManagerDelegate {
 
     // MARK: - Types
     
@@ -94,6 +94,14 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
     
     fileprivate let originalRoute: [WAYGraphEdge]
     
+    //GIACOMO
+    fileprivate var nearBeac : WAYBeacon
+    fileprivate var prova = false
+    fileprivate var fifoBeac = [WAYBeacon]()
+    let locationManager = CLLocationManager()
+    fileprivate var compassNow: Double
+    fileprivate var girarsiJustShow = false
+    
     /// A stopwatch for mesuring the time from start to end for each route. Can be switched off in WAYSettings
     private var stopwatch: Stopwatch?
     
@@ -108,6 +116,10 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
         
         self.originalRoute = route
         
+        //GIACOMO
+        self.nearBeac = startingBeacon
+        self.compassNow = -1.0
+        
         super.init()
     }
     
@@ -119,7 +131,7 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: UIAccessibilityVoiceOverStatusChanged), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: WAYDeveloperSettings.DeveloperSettingsChangedNotification), object: nil)
         
-        stopwatch?.stop()
+        //stopwatch?.stop()
     }
     
     
@@ -135,10 +147,17 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
         
         nextButton = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(ActiveRouteViewController.nextButtonPressed(_:)))
         
-        if WAYConstants.WAYSettings.stopwatchEnabled {
+        /*if WAYConstants.WAYSettings.stopwatchEnabled {
             stopwatch = Stopwatch()
             stopwatch?.delegate = self
-        }
+        }*/
+        
+        //BUSSOLA
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+        locationManager.startUpdatingHeading()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -159,13 +178,20 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
         speechEngine.textView = underlyingView.textView
         speechEngine.repeatButton = underlyingView.repeatButton
         
-        if firstAppearance {
-            firstAppearance = false
+        //GIACOMO
+        let defaults = UserDefaults.standard
+        let BussolaButton = defaults.bool(forKey: WAYDeveloperSettings.WAYDeveloperSettingsKeys.MostraBussola)
+        if(!BussolaButton){
+            if firstAppearance {
+                firstAppearance = false
 
-            if UIAccessibilityIsVoiceOverRunning() {
-                beginRouteWithDelay(delay: 2)
-            } else {
-                beginRoute()
+                //se è la prima volta che appare, allora non far partire subito begin route
+                //ma prima fai raddrizzare la persona
+                if UIAccessibilityIsVoiceOverRunning() {
+                    beginRouteWithDelay(delay: 2)
+                } else {
+                    beginRoute()
+                }
             }
         }
     }
@@ -189,13 +215,85 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
         underlyingView.repeatButton.addTarget(self, action: #selector(ActiveRouteViewController.repeatButtonPressed(_:)), for: .touchUpInside)
     }
     
+    //BUSSOLA
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        compassNow = Double(newHeading.magneticHeading)
+        testoDebug()
+        
+        //se si è all'inizio, cioè firstAppearence = true
+        //e se l'angolo letto è maggiore di 0 (se non legge nessun valore vale -1.0
+        //fai partire l'algoritmo di controllo della direzione
+        let defaults = UserDefaults.standard
+        let BussolaButton = defaults.bool(forKey: WAYDeveloperSettings.WAYDeveloperSettingsKeys.MostraBussola)
+        if(firstAppearance && compassNow>0 && BussolaButton){
+            raddrizzati()
+        }
+    }
+    
+    //per ora fa partire il percorso se si è dentro l'angolo una volta sola
+    //poi si potrebbe aggiungere un tempo per cui deve stare dentro, per evitare errori
+    fileprivate func raddrizzati(){
+        let giratiDx = "Girati verso destra per iniziare il percorso"
+        let giratiSx = "Girati verso sinistra per iniziare il percorso"
+        
+        //let angleOk : Float = 350.0
+        //poi bisognerà inserire l'angolo letto direttamente dal grafo
+        let angleEdge = route[0].compass
+        let defaults = UserDefaults.standard
+        var tolerance : Double
+        let toleranceSalvata = defaults.double(forKey: WAYStrings.defaultsKeys.compassKey)
+        if(toleranceSalvata>0.0 && toleranceSalvata<=90.0){
+            tolerance = toleranceSalvata
+        }
+        else{
+            tolerance = WAYConstants.Bussola.startingTolerance
+        }
+        
+        let angleMin = Double((angleEdge-tolerance).truncatingRemainder(dividingBy: 360.0))
+        let angleMax = Double((angleEdge+tolerance).truncatingRemainder(dividingBy: 360.0))
+        print("AngleMin: " + angleMin.description + "AngleMax: " + angleMax.description + "\n")
+        
+        if( ((angleMax>angleMin) && (compassNow>angleMin && compassNow<angleMax)) ||
+            ((angleMax<angleMin) && ((compassNow>angleMin && compassNow>angleMax) || (compassNow<angleMin && compassNow<angleMax)) ) ){
+            firstAppearance = false
+            if UIAccessibilityIsVoiceOverRunning() {
+                beginRouteWithDelay(delay: 2)
+            } else {
+                beginRoute()
+            }
+        }
+        else {
+            if(!girarsiJustShow){
+                //Algoritmo che calcola se girarsi verso dx o verso sx
+                if(abs(compassNow - angleEdge)<=180){
+                    if(compassNow>=angleEdge){
+                        speechEngine.playInstruction(giratiSx)
+                    }
+                    else{
+                        speechEngine.playInstruction(giratiDx)
+                    }
+                }
+                else{
+                    if(compassNow>=angleEdge){
+                        speechEngine.playInstruction(giratiDx)
+                    }
+                    else{
+                        speechEngine.playInstruction(giratiSx)
+                    }
+                }
+                girarsiJustShow = true
+            }
+        }
+        
+    }
+    //END BUSSOLA
     
     // MARK: - BeaconInterfaceDelegate
     
     func beaconInterface(_ beaconInterface: BeaconInterface, didChangeBeacons beacons: [WAYBeacon]) {
         
         let filteredSortedBeacons = filteredSorted(beacons: beacons)
-        
+
         if !filteredSortedBeacons.isEmpty {
             
             guard let nextBeacon = filteredSortedBeacons.first,
@@ -206,6 +304,30 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
                 return
             }
             
+            nearBeac = nextBeacon
+            testoDebug()
+            
+            //fifo segnale beacon
+            //se il beacon più vicino lo è stato anche almeno altre due volte nelle ultime tre
+            //aggiornalo, altrimenti aspetta e fai fifo
+            /*if(fifoBeac.isEmpty){
+                fifoBeac.append(nextBeacon)
+            }
+            else {
+                var count = 0
+                for element in fifoBeac{
+                    if(element.minor == nextBeacon.minor){
+                        count += 1
+                    }
+                }
+                if(count<3){
+                    if(fifoBeac.count>3){
+                        fifoBeac.removeFirst()
+                    }
+                    fifoBeac.append(nextBeacon)
+                    return
+                }
+            }*/
             
             if WAYConstants.WAYSettings.strictRouting {
                 // Check if the next beacon is next in the route before we continue
@@ -223,40 +345,31 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
         }
     }
     
-    private func filteredSorted(beacons: [WAYBeacon]) -> [WAYBeacon] {
-        
+    fileprivate func filteredSorted(beacons: [WAYBeacon]) -> [WAYBeacon] {
         return beacons.filter({
             
             if WAYConstants.WAYSettings.locateNearestBeaconUsingRssi {
-                
                 if let _ = $0.rssi {
                     return true
                 }
             } else {
-                
                 if let _ = $0.accuracy {
                     return true
                 }
             }
-            
             return false
             
         }).sorted(by: {
             
             if WAYConstants.WAYSettings.locateNearestBeaconUsingRssi {
-                
                 if let lhsRssi = $0.rssi, let rhsRssi = $1.rssi {
-                    
                     return lhsRssi > rhsRssi
                 }
             } else {
-                
                 if let lhsAccuracy = $0.accuracy, let rhsAccuracy = $1.accuracy {
-                    
                     return lhsAccuracy < rhsAccuracy
                 }
             }
-            
             return false
         })
     }
@@ -306,14 +419,13 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
             
             return
         }
+        print("Begin route\n")
 
         if let beginning = route[0].instructions.beginning {
             let prefix = String(format: WAYStrings.ActiveRoute.FirstInstructionPrefixFormat, WAYStrings.ActiveRoute.FirstInstructionPrefix)
-            
-            //HO TOLTO LA FRASE "PER LA TUA DESTINAZIONE" CHE DICEVA ALL'INIZIO
-            
-            underlyingView.textView.text = /*prefix + */ beginning
-            playNextInstruction(forcePlayback: .None /*,prefix: prefix*/)
+                        
+            underlyingView.textView.text = prefix + beginning
+            playNextInstruction(forcePlayback: .None,prefix: prefix)
         } else if let middle = route[0].instructions.middle {
             underlyingView.textView.text = middle
             playNextInstruction(forcePlayback: .Middle)
@@ -337,15 +449,19 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
         
         let myGraph = venue.destinationGraph
         
-        let filteredBeacons = beacons.filter({$0.accuracy >= 0.0})
+        /*let filteredBeacons = beacons.filter({$0.accuracy >= 0.0})
+          for beacon in filteredBeacons {
+        */
         
-        for beacon in filteredBeacons {
+        for beacon in beacons {
             if beacon.identifier == nearestBeacon.identifier {
                 continue
             }
             
+            /*if let node = myGraph.getNode(major: beacon.major, minor: beacon.minor),
+                WAYGraph.beacon(beacon: beacon, isWithinRangeOf: edge, isUsingRssi: WAYConstants.WAYSettings.locateNearestBeaconUsingRssi)*/
             if let node = myGraph.getNode(major: beacon.major, minor: beacon.minor),
-                WAYGraph.beacon(beacon: beacon, isWithinRangeOf: node, isUsingRssi: WAYConstants.WAYSettings.locateNearestBeaconUsingRssi) {
+                WAYGraph.beacon(beacon: beacon, isWithinRangeOf: route[0]) {
                 
                 let routeItem = route[0]
                 
@@ -360,16 +476,16 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
                 } else if let routeIndex = routeNodes.index(of: node) {
                     // We've skipped a beacon (or a few) for some reason. Continue the route from this new point.
 
-                    skipToInstruction(routeIndex)
-
                     nearestBeacon = beacon
                     
+                    skipToInstruction(routeIndex)
+
                     return
                 }
+                //else if il beacon appartiene al percorso originale, allora riparti da quel punto
             }
         }
     }
-    
     
     // MARK: - Playback
     
@@ -397,28 +513,33 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
             if let ending = routeItem.instructions.ending {
                 if route.count == 1 {
                     speechEngine.playArrivalInstruction(ending)
-                    stopwatch?.stop()
+                    //stopwatch?.stop()
                 } else {
                     speechEngine.playInstruction(ending)
                 }
             }
             
             // Remove finished routeItem
-            route.removeFirst()
+            if(!route.isEmpty){
+                route.removeFirst()
+            }
             
             // Check to see if we have completed the route
             if route.isEmpty {
                 //GIACOMO
                 speechEngine.playInstruction("Sei arrivato a destinazione")
-                stopwatch?.stop()
+                //stopwatch?.stop()
                 return
             }
         } else {
             firstInstruction = false
-            stopwatch?.start()
+            //stopwatch?.start()
         }
         
-        routeNodes.removeFirst()
+        if(!routeNodes.isEmpty){
+            routeNodes.removeFirst()
+        }
+        print("Play instruction\n")
         
         // Play beginning instruction from next `routeItem`
         if let beginning = route[0].instructions.beginning {
@@ -450,13 +571,18 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
 
     fileprivate func skipToInstruction(_ index: Int) {
         guard index < route.count && index > 1 else {
+            //GIACOMO ATTENZIONE
+            prova = true
+            route.removeFirst()
+            routeNodes.removeFirst()
+            playNextInstruction()
+            
             return
         }
         
         route.removeSubrange(0 ..< index - 1)
         routeNodes.removeSubrange(0 ..< index - 1)
 
-        
         playNextInstruction()
     }
     
@@ -484,7 +610,6 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
         }
     }
     
-    
     // MARK: - Accessibility
     
     /**
@@ -496,7 +621,6 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
         }
     }
     
-    
     // MARK: - Developer Settings
     
     func developerSettingsChanged() {
@@ -506,7 +630,27 @@ final class ActiveRouteViewController: BaseViewController<ActiveRouteView>, Beac
         navigationItem.rightBarButtonItem = rightButton
     }
     
-    
+    func testoDebug(){
+        //let distanzaAcc = Float(beaconVicino.accuracy!)
+        //let distance = String(format: "%.2f", distanzaAcc)
+        
+        let valoreRssi = nearBeac.rssi?.description
+        let rimasti = "Rimasti: " + route.count.description
+        let ultimo = "; Last: " + nearestBeacon.minor.description
+        let vicino = "; Near: " + nearBeac.minor.description
+        let testo = rimasti + ultimo + vicino + "  " + valoreRssi!
+        
+        //underlyingView.timeLabel.text = testo
+        let angolo = String(format: "%.1f", compassNow)
+        let compassOk = route[0].compass.description
+        let rssiOk = route[0].rssi.description
+        var rssiNow = 0
+        if(nearBeac.rssi! < 0 && nearBeac.rssi! > -500){
+            rssiNow = nearBeac.rssi!
+        }
+        let testoDaMostrare = "Near: " + nearBeac.minor.description + ", Angle: " + angolo + "/" + compassOk + ", Rssi: " + rssiNow.description + "/" + rssiOk
+        underlyingView.timeLabel.text = testoDaMostrare
+    }
     
 }
 
@@ -516,6 +660,7 @@ extension ActiveRouteViewController: StopwatchDelegate {
     
     func stopwatch(stopwatch: Stopwatch, timeDidUpdate timeText: String) {
         
-        underlyingView.timeLabel.text = timeText
+        //underlyingView.timeLabel.text = timeText
+        /*underlyingView.timeLabel.text = "Rimasti: " + route.count.description + "Last: " + nearestBeacon.minor.description + " Near: " + nearBeac.minor.description*/
     }
 }

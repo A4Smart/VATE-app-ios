@@ -89,6 +89,7 @@
 		A93E438F2040434600886357 /* ModeSelectionTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93E438E2040434600886357 /* ModeSelectionTabBarController.swift */; };
 		A9A5D67A202312E700743CEE /* RssiExportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5D679202312E700743CEE /* RssiExportViewController.swift */; };
 		A9A5D67C202319C200743CEE /* BeaconExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A5D67B202319C200743CEE /* BeaconExportView.swift */; };
+		A9C75EA4207E06D200C637B6 /* LabelTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C75EA3207E06D200C637B6 /* LabelTableViewCell.swift */; };
 		A9D74AA220403EDA00F665B3 /* WAYAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D74A9F20403EDA00F665B3 /* WAYAccessibility.swift */; };
 		A9D74AA320403EDA00F665B3 /* WAYConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D74AA020403EDA00F665B3 /* WAYConstants.swift */; };
 		A9D74AA420403EDA00F665B3 /* WAYStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D74AA120403EDA00F665B3 /* WAYStrings.swift */; };
@@ -209,6 +210,7 @@
 		A93E438E2040434600886357 /* ModeSelectionTabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ModeSelectionTabBarController.swift; path = "Wayfindr Demo/Classes/Controller/ModeSelectionTabBarController.swift"; sourceTree = SOURCE_ROOT; };
 		A9A5D679202312E700743CEE /* RssiExportViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RssiExportViewController.swift; path = ../Developer/RssiExportViewController.swift; sourceTree = "<group>"; };
 		A9A5D67B202319C200743CEE /* BeaconExportView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeaconExportView.swift; path = ../Developer/BeaconExportView.swift; sourceTree = "<group>"; };
+		A9C75EA3207E06D200C637B6 /* LabelTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelTableViewCell.swift; sourceTree = "<group>"; };
 		A9D74A9F20403EDA00F665B3 /* WAYAccessibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WAYAccessibility.swift; sourceTree = "<group>"; };
 		A9D74AA020403EDA00F665B3 /* WAYConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WAYConstants.swift; sourceTree = "<group>"; };
 		A9D74AA120403EDA00F665B3 /* WAYStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WAYStrings.swift; sourceTree = "<group>"; };
@@ -301,6 +303,7 @@
 				A9D74AAF20403F5500F665B3 /* LabeledSwitch.swift */,
 				A9D74AB020403F5500F665B3 /* SubtitledDetailTableViewCell.swift */,
 				A9D74AB120403F5500F665B3 /* SwitchTableViewCell.swift */,
+				A9C75EA3207E06D200C637B6 /* LabelTableViewCell.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -729,7 +732,7 @@
 			attributes = {
 				LastSwiftMigration = 0720;
 				LastSwiftUpdateCheck = 0710;
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Wayfindr.org Limited";
 				TargetAttributes = {
 					00BF3D441BF20ED40075533D = {
@@ -913,6 +916,7 @@
 				A9D74ABC20403F5500F665B3 /* SwitchTableViewCell.swift in Sources */,
 				00FE28161C2022CE003B9162 /* BeaconsInRangeSearchTableViewController.swift in Sources */,
 				8128EAB11D44600700828252 /* UserActionTableHeaderView.swift in Sources */,
+				A9C75EA4207E06D200C637B6 /* LabelTableViewCell.swift in Sources */,
 				00EC11C61C27E39700619EEE /* MissingKeyRoutesTableViewController.swift in Sources */,
 				A9D74AB620403F5500F665B3 /* BorderedButton.swift in Sources */,
 				006EA5201BF3717600BE1B37 /* UITabBar+SizeAdjustment.swift in Sources */,
@@ -1004,12 +1008,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -1058,12 +1064,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -1110,7 +1118,7 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Wayfindr Demo/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.wayfindr.Wayfindr-Demo";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.wayfindr.Wayfindr-Demo-Handing";
 				PRODUCT_NAME = "Wayfindr Demo";
 				SWIFT_OBJC_BRIDGING_HEADER = "Wayfindr Demo/Supporting Files/WayfindrDemo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1134,7 +1142,7 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Wayfindr Demo/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.wayfindr.Wayfindr-Demo";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.wayfindr.Wayfindr-Demo-Handing";
 				PRODUCT_NAME = "Wayfindr Demo";
 				SWIFT_OBJC_BRIDGING_HEADER = "Wayfindr Demo/Supporting Files/WayfindrDemo-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;

@@ -36,10 +36,12 @@ struct WAYDeveloperSettings {
     /**
     *  `NSUserDefaults` keys for developer settings.
     */
-    fileprivate struct WAYDeveloperSettingsKeys {
+    struct WAYDeveloperSettingsKeys {
         static let ShowForceNextButton  = "Developer_ShowForceNextButton"
         static let ShowRepeatButton     = "Developer_ShowRepeatButton"
         static let MostraSoloPiazzaButton = "Developer_MostraSoloPiazzaButton"
+        static let MostraBussola = "Developer_MostraBussola"
+        
     }
     
     
@@ -71,6 +73,13 @@ struct WAYDeveloperSettings {
         }
     }
     
+    /// Whether or not to show the repeat button when VoiceOver is turned on.
+    var showBussolaButton: Bool {
+        didSet {
+            saveSettings()
+        }
+    }
+    
     
     // MARK: - Initializers
     
@@ -80,6 +89,7 @@ struct WAYDeveloperSettings {
         showForceNextButton = defaults.bool(forKey: WAYDeveloperSettingsKeys.ShowForceNextButton)
         showRepeatButton = defaults.bool(forKey: WAYDeveloperSettingsKeys.ShowRepeatButton)
         showPiazzaButton = defaults.bool(forKey: WAYDeveloperSettingsKeys.MostraSoloPiazzaButton)
+        showBussolaButton = defaults.bool(forKey: WAYDeveloperSettingsKeys.MostraBussola)
     }
     
     
@@ -94,6 +104,7 @@ struct WAYDeveloperSettings {
         defaults.set(showForceNextButton, forKey: WAYDeveloperSettingsKeys.ShowForceNextButton)
         defaults.set(showRepeatButton, forKey: WAYDeveloperSettingsKeys.ShowRepeatButton)
         defaults.set(showPiazzaButton, forKey: WAYDeveloperSettingsKeys.MostraSoloPiazzaButton)
+        defaults.set(showBussolaButton, forKey: WAYDeveloperSettingsKeys.MostraBussola)
         defaults.synchronize()
         
         NotificationCenter.default.post(name: Notification.Name(rawValue: WAYDeveloperSettings.DeveloperSettingsChangedNotification), object: nil)
@@ -111,6 +122,7 @@ struct WAYDeveloperSettings {
         defaults.register(defaults: [WAYDeveloperSettingsKeys.ShowForceNextButton : false])
         defaults.register(defaults: [WAYDeveloperSettingsKeys.ShowRepeatButton : true])//era true
         defaults.register(defaults: [WAYDeveloperSettingsKeys.MostraSoloPiazzaButton : false])
+        defaults.register(defaults: [WAYDeveloperSettingsKeys.MostraBussola : true])
 
     }
 

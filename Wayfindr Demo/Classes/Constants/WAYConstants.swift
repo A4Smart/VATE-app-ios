@@ -92,4 +92,7 @@ struct WAYConstants {
         static let preUtteranceDelay: TimeInterval = 0.1
         static let postUtteranceDelay: TimeInterval = 0.1
     }
+    struct Bussola {
+        static let startingTolerance: Double = 20.0
+    }
 }

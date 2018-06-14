@@ -92,11 +92,13 @@ struct WAYGraphNode: Equatable, CustomStringConvertible {
     let name: String
     /// All of the waypoint types supported by this node.
     let nodeType: WAYGraphNodeType
+    
+    /*
     /// The minimum CLBeacon accuracy level required to activate the node.
     let accuracy: Double
     /// The minimum CLBeacon rssi level required to activate the node.
     let rssi: Int
-    
+    */
     
     /**
      *  Attributes for the `node` GraphML element.
@@ -115,10 +117,10 @@ struct WAYGraphNode: Equatable, CustomStringConvertible {
         case Minor                  = "minor"
         case Name                   = "name"
         case NodeType               = "waypoint_type"
-        case Accuracy               = "accuracy"
-        case Rssi                   = "rssi"
+        /*case Accuracy               = "accuracy"
+        case Rssi                   = "rssi"*/
         
-        static let allValues = [Major, Minor, Name, NodeType, Accuracy, Rssi]
+        static let allValues = [Major, Minor, Name, NodeType /*, Accuracy, Rssi*/]
     }
     
     /// Plain text description of the node.
@@ -146,14 +148,14 @@ struct WAYGraphNode: Equatable, CustomStringConvertible {
     
     - throws:   Throws a `WAYError` if the `xmlElement` is not in the correct format.
     */
-    init(xmlElement: AEXMLElement, defaultAccuracy: Double) throws {
+    init(xmlElement: AEXMLElement /*, defaultAccuracy: Double*/) throws {
         // Temporary storage for the data elements
         var tempMajor: Int?
         var tempMinor: Int?
         var tempName: String?
         var tempNodeType = WAYGraphNodeType.None
-        var tempAccuracy: Double?
-        var tempRssi: Int?
+        /*var tempAccuracy: Double?
+        var tempRssi: Int?*/
         
         // Retrieve the ID
         guard let myID = xmlElement.attributes[WAYGraphNodeAttributes.identifier] else {
@@ -186,12 +188,10 @@ struct WAYGraphNode: Equatable, CustomStringConvertible {
                                 tempNodeType.insert(newValue)
                             }
                         }
-                    case .Accuracy:
-
+                    /*case .Accuracy:
                         tempAccuracy = dataItem.double
                     case .Rssi:
-                        
-                        tempRssi = dataItem.int
+                        tempRssi = dataItem.int*/
                     }
             }
             
@@ -210,8 +210,8 @@ struct WAYGraphNode: Equatable, CustomStringConvertible {
         minor = myMinor
         name = myName
         nodeType = tempNodeType
-        accuracy = tempAccuracy ?? defaultAccuracy
-        rssi = tempRssi ?? -1000
+        /*accuracy = tempAccuracy ?? defaultAccuracy
+        rssi = tempRssi ?? -1000*/
     }
     
     fileprivate static func stringToNodeType(_ value: String) -> WAYGraphNodeType? {
@@ -256,18 +256,14 @@ struct WAYGraphNode: Equatable, CustomStringConvertible {
     func isNext(in route: [WAYGraphEdge], from fromNode: WAYGraphNode) -> Bool {
         
         guard let fromIndex = route.index(where: { $0.sourceID == fromNode.identifier }) else {
-            
             return false
         }
         
         let toIndex = fromIndex+1
         
         if route.indices.contains(toIndex) {
-            
             return self.identifier == route[toIndex].sourceID
-            
         } else {
-            
             let nextToLastEdge = route[fromIndex]
             
             return self.identifier == route.last?.targetID && fromNode.identifier == nextToLastEdge.sourceID
@@ -291,6 +287,6 @@ func ==(lhs: WAYGraphNode, rhs: WAYGraphNode) -> Bool {
     return (lhs.identifier == rhs.identifier &&
         lhs.major == rhs.major &&
         lhs.minor == rhs.minor &&
-        lhs.name == rhs.name &&
-        lhs.accuracy == rhs.accuracy)
+        lhs.name == rhs.name /*&&
+        lhs.accuracy == rhs.accuracy*/)
 }

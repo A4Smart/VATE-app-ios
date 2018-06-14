@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>WayFindrDemo</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -22,8 +24,16 @@
 	<string>7</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Wayfindr requires location information to function.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Wayfindr requires location information to function.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Wayfindr requires location information to function.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Wayfindr requires location information to function.</string>
+	<key>LSBundleContainsCoreMLmlmodelc</key>
+	<false/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

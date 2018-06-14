@@ -26,7 +26,6 @@
 import Foundation
 import CoreLocation
 
-
 /**
  *  Manufacturer and implementation independent representation of a beacon.
  */

@@ -42,7 +42,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ESTBeaconManagerDelegate 
     //GIACOMO
     let beaconManager = ESTBeaconManager()
     
-    
     // MARK: - UIApplicationDelegate
     
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {

@@ -42,7 +42,6 @@ fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 }
 
 
-
 /// Calculated the route to the desired `desintation` based on the nearest beacon. Gives user option to preview all the instructions or to start route immediately.
 final class RouteCalculationViewController: BaseViewController<RouteCalculationView>, BeaconInterfaceDelegate {
     
@@ -116,7 +115,11 @@ final class RouteCalculationViewController: BaseViewController<RouteCalculationV
             return
         }
         
-        let filteredSortedBeacons = beacons.filter({
+        //GIACOMO: ho copiato la funzione FilteredSorted da ActiveRoute
+        //così li mette in ordine di rssi e non di beacon
+        let filteredSortedBeacons = filteredSorted(beacons: beacons)
+        
+        /*let filteredSortedBeacons = beacons.filter({
             if let _ = $0.accuracy {
                 return true
             }
@@ -124,12 +127,39 @@ final class RouteCalculationViewController: BaseViewController<RouteCalculationV
             return false
         }).sorted(by: {
             $0.accuracy < $1.accuracy
-        })
+        })*/
         
         if !filteredSortedBeacons.isEmpty {
             // Calculate the inital route from the nearest beacon
             determineRoute(filteredSortedBeacons)
         }
+    }
+    
+    //GIACOMO
+    fileprivate func filteredSorted(beacons: [WAYBeacon]) -> [WAYBeacon] {
+        return beacons.filter({
+            if WAYConstants.WAYSettings.locateNearestBeaconUsingRssi {
+                if let _ = $0.rssi {
+                    return true
+                }
+            } else {
+                if let _ = $0.accuracy {
+                    return true
+                }
+            }
+            return false
+        }).sorted(by: {
+            if WAYConstants.WAYSettings.locateNearestBeaconUsingRssi {
+                if let lhsRssi = $0.rssi, let rhsRssi = $1.rssi {
+                    return lhsRssi > rhsRssi
+                }
+            } else {
+                if let lhsAccuracy = $0.accuracy, let rhsAccuracy = $1.accuracy {
+                    return lhsAccuracy < rhsAccuracy
+                }
+            }
+            return false
+        })
     }
     
     
@@ -157,6 +187,13 @@ final class RouteCalculationViewController: BaseViewController<RouteCalculationV
                         DispatchQueue.main.async(execute: {
                             self?.underlyingView.activityIndicator.stopAnimating()
                             self?.underlyingView.calculating = false
+                            
+                            //GIACOMO
+                            let viewController = ActiveRouteViewController(interface: (self?.interface)!, venue: (self?.venue)!, route: (self?.route)!, startingBeacon: (self?.nearestBeacon!)!, speechEngine: (self?.speechEngine)!)
+                            /*let viewController = DirectionsPreviewViewController(interface: (self?.interface)!, venue: (self?.venue)!, route: (self?.route)!, startingBeacon: (self?.nearestBeacon!)!, speechEngine: (self?.speechEngine)!)*/
+                            print("Beacon di partenza: " + (self?.nearestBeacon?.minor.description)! + "\n")
+                            
+                            self?.navigationController?.pushViewController(viewController, animated: true)
                         })
                     } else {
                         DispatchQueue.main.async(execute: {

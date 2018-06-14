@@ -51,7 +51,6 @@ final class DirectionsPreviewViewController: BaseViewController<DirectionsPrevie
     
     fileprivate let previewTableView: DirectionsPreviewTableViewController
     
-    
     // MARK: - Intiailizers / Deinitializers
     
     init(interface: BeaconInterface, venue: WAYVenue, route: [WAYGraphEdge], startingBeacon: WAYBeacon, speechEngine: AudioEngine) {

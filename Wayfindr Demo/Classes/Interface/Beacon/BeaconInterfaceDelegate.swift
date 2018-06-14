@@ -25,6 +25,14 @@
 
 import Foundation
 
+//GIACOMO BUSSOLA
+
+//GIACOMO
+protocol CompassDelegate: class {
+    
+    func beaconInterface(_ beaconInterface: BeaconInterface, didChangeHeading compass: CLHeading)
+
+}
 
 protocol BeaconInterfaceDelegate: class {
     
@@ -35,7 +43,6 @@ protocol BeaconInterfaceDelegate: class {
      - parameter beacons:         New and/or updated array of `WAYBeacon` nearby.
      */
     func beaconInterface(_ beaconInterface: BeaconInterface, didChangeBeacons beacons: [WAYBeacon])
-    
 }
 
 

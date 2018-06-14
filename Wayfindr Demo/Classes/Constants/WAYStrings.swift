@@ -31,6 +31,11 @@ import Foundation
  */
 struct WAYStrings {
     
+    //GIACOMO: salvataggio valori in memoria
+    struct defaultsKeys {
+        static let compassKey = "compassKey"
+        static let keyTwo = "secondStringKey"
+    }
     
     // MARK: - General
     
@@ -130,6 +135,7 @@ struct WAYStrings {
         static let ShowForceNextButton  = NSLocalizedString("Show Force Next Beacon Button", comment: "")
         static let ShowRepeatButton     = NSLocalizedString("Show Repeat Button with Voiceover", comment: "")
         //GIACOMO
+        static let ShowUsaBussola       = NSLocalizedString("Bussola in partenza", comment: "")
         static let ShowSoloPiazza       = NSLocalizedString("Mostra solo i beacon di Piazza San Marco", comment: "")
     }
     

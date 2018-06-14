@@ -101,11 +101,11 @@ struct WAYGraph: CustomStringConvertible {
             throw WAYError.invalidGraph
         }
 
-        guard let defaultAccuracyNode = xmlDocument.root["key"].all(withAttributes: ["id" : "accuracy"])?.first,
+        /*guard let defaultAccuracyNode = xmlDocument.root["key"].all(withAttributes: ["id" : "accuracy"])?.first,
             let value = defaultAccuracyNode["default"].first?.value, let defaultAccuracy = Double(value) else {
             
             throw WAYError.invalidGraph
-        }
+        }*/
         
         let graphRootNode = xmlDocument.root[rootNodeName]
         
@@ -116,7 +116,7 @@ struct WAYGraph: CustomStringConvertible {
                 switch elementType {
                 case .Node:
                     do {
-                        let node = try WAYGraphNode(xmlElement: child, defaultAccuracy: defaultAccuracy)
+                        let node = try WAYGraphNode(xmlElement: child /*, defaultAccuracy: defaultAccuracy*/)
                         let _ = graph.addVertex(node)
                     } catch let error as WAYError {
                         throw error
@@ -232,6 +232,7 @@ struct WAYGraph: CustomStringConvertible {
                 return false
         }
         
+        //ALGORITMO DI RICERCA IN AMPIEZZA per cercare se c'è un percorso
         let route = graph.bfs(from: startNodeIndex, to: destinationNodeIndex)
         
         return !route.isEmpty
@@ -243,7 +244,7 @@ struct WAYGraph: CustomStringConvertible {
      - parameter fromNode: Beginning of the path.
      - parameter toNode:   End of the path.
      
-     - returns: The shortest route between the nodes, if one exists. Otherwise returns nil.
+     - returns: a lsit of nodes - The shortest route between the nodes, if one exists. Otherwise returns nil.
      */
     func shortestRoute(_ fromNode: WAYGraphNode, toNode: WAYGraphNode) -> [WAYGraphEdge]? {
         guard canRoute(fromNode, toNode: toNode) else {
@@ -269,7 +270,6 @@ struct WAYGraph: CustomStringConvertible {
         return route
     }
     
-    
     // MARK: - Static functions
     
     /**
@@ -281,7 +281,17 @@ struct WAYGraph: CustomStringConvertible {
      
      - returns: true if the beacon is within range of the nodes accuracy or rssi. Otherwise return false.
     */
-    static func beacon(beacon: WAYBeacon, isWithinRangeOf node: WAYGraphNode, isUsingRssi: Bool) -> Bool {
+    
+    //HANDINGCHANGE
+    static func beacon(beacon: WAYBeacon, isWithinRangeOf edge: WAYGraphEdge) -> Bool {
+            guard let beaconRssi = beacon.rssi else {
+                return false
+            }
+            return beaconRssi > edge.rssi
+    }
+    
+    //prima era così
+    /*static func beacon(beacon: WAYBeacon, isWithinRangeOf node: WAYGraphNode, isUsingRssi: Bool) -> Bool {
         
         if isUsingRssi {
             
@@ -300,6 +310,6 @@ struct WAYGraph: CustomStringConvertible {
             
             return beaconAccuracy < node.accuracy
         }
-    }
+    }*/
     
 }

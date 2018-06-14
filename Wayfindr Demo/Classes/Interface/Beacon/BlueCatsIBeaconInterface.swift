@@ -38,6 +38,10 @@ final class BlueCatsIBeaconInterface: NSObject, BeaconInterface { //BlueCatsIBea
     
     weak var stateDelegate: BeaconInterfaceStateDelegate?
     
+    //GIACOMO
+    weak var compassDelegate: CompassDelegate?
+
+    
     var validBeacons: [BeaconIdentifier]?
     
     private(set) var interfaceState = BeaconInterfaceState.initializing {
