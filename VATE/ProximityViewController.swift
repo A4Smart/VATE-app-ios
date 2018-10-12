@@ -15,16 +15,14 @@ class ProximityViewController: UIViewController, CLLocationManagerDelegate {
     
     let locationManager = CLLocationManager()
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        locationManager.requestAlwaysAuthorization()
+        locationManager.delegate = self
         // Do any additional setup after loading the view, typically from a nib.
     }
 
     @IBAction func buttonHandler(_ sender: UIButton) {
-        os_log("prova")
-        locationManager.requestAlwaysAuthorization()
-        locationManager.delegate = self
         monitorBeacons()
     }
     
@@ -56,13 +54,9 @@ class ProximityViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
-    func locationManager(_ manager: CLLocationManager,
-                         didRangeBeacons beacons: [CLBeacon],
-                         in region: CLBeaconRegion) {
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         
         if beacons.count > 0 {
-        
-            
             let nearestBeacon = beacons[0]
             let major = CLBeaconMajorValue(truncating: nearestBeacon.major)
             let minor = CLBeaconMinorValue(truncating: nearestBeacon.minor)
