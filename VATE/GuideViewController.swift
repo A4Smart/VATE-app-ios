@@ -57,8 +57,14 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate {
             let minor = CLBeaconMinorValue(truncating: nearestBeacon.minor)
             
             if(major == 42) {
-                guide(minor: Int(minor))
+                if (nearestBeacon.proximity == .near || nearestBeacon.proximity == .immediate) {
+                        guide(minor: Int(minor))
+                }
+                else {
+                    os_log("detection: minor: %d, proximity: %d", type: .debug, minor, nearestBeacon.proximity.rawValue )
+                }
             }
+            
         }
     }
     
