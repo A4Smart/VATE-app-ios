@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="q2e-Fk-Qh2">
-    <device id="retina6_1" orientation="portrait">
+    <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -11,46 +11,50 @@
     </dependencies>
     <scenes>
         <!--Proximity-->
-        <scene sceneID="tne-QT-ifu">
+        <scene sceneID="hOM-Kp-3Sc">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ProximityViewController" customModule="VATE" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                <viewController id="xeC-sN-aK0" customClass="ProximityViewController" customModule="VATE" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="xjP-Ws-JoB">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UKC-zb-eRY">
-                                <rect key="frame" x="16" y="60" width="382" height="30"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="buttonHandler:" destination="BYZ-38-t0r" eventType="touchUpInside" id="wOL-tP-Zqn"/>
-                                </connections>
-                            </button>
+                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fKO-UP-f8B">
+                                <rect key="frame" x="0.0" y="44" width="375" height="685"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="UKC-zb-eRY" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="16" id="dce-5T-GWg"/>
-                            <constraint firstItem="UKC-zb-eRY" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="hfX-fp-7vD"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="UKC-zb-eRY" secondAttribute="trailing" constant="16" id="tFR-qE-dFw"/>
+                            <constraint firstItem="NzG-hH-fQW" firstAttribute="trailing" secondItem="fKO-UP-f8B" secondAttribute="trailing" id="BZp-3e-V4O"/>
+                            <constraint firstItem="NzG-hH-fQW" firstAttribute="bottom" secondItem="fKO-UP-f8B" secondAttribute="bottom" id="VPf-Jf-ArD"/>
+                            <constraint firstItem="fKO-UP-f8B" firstAttribute="leading" secondItem="NzG-hH-fQW" secondAttribute="leading" id="XJP-du-9UL"/>
+                            <constraint firstItem="fKO-UP-f8B" firstAttribute="top" secondItem="NzG-hH-fQW" secondAttribute="top" id="xzw-5P-5p8"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <viewLayoutGuide key="safeArea" id="NzG-hH-fQW"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Proximity" id="hFs-S4-mxJ"/>
-                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                    <tabBarItem key="tabBarItem" title="Proximity" id="z4Y-wl-qkM"/>
+                    <connections>
+                        <outlet property="webView" destination="fKO-UP-f8B" id="6pA-G0-ryY"/>
+                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zsl-FB-xE4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="80" y="-66"/>
+            <point key="canvasLocation" x="79" y="-157"/>
         </scene>
         <!--Guide-->
         <scene sceneID="0qr-Vw-bD3">
             <objects>
                 <viewController id="qdT-We-Za0" customClass="GuideViewController" customModule="VATE" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="TFP-AZ-3nF">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="oJA-mc-4Rm">
-                                <rect key="frame" x="0.0" y="44" width="414" height="769"/>
+                                <rect key="frame" x="0.0" y="44" width="375" height="685"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -85,7 +89,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="Dyf-9d-oPT"/>
+                        <segue destination="xeC-sN-aK0" kind="relationship" relationship="viewControllers" id="ovP-EF-Ic4"/>
                         <segue destination="qdT-We-Za0" kind="relationship" relationship="viewControllers" id="Qo1-gR-QxW"/>
                     </connections>
                 </tabBarController>

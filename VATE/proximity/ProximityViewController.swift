@@ -9,21 +9,20 @@
 import UIKit
 import os
 import CoreLocation
+import WebKit
 
 
-class ProximityViewController: UIViewController, CLLocationManagerDelegate {
+class ProximityViewController: UIPageViewController, CLLocationManagerDelegate {
     
     let locationManager = CLLocationManager()
-
+    @IBOutlet weak var webView: WKWebView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         locationManager.requestAlwaysAuthorization()
         locationManager.delegate = self
-        // Do any additional setup after loading the view, typically from a nib.
-    }
-
-    @IBAction func buttonHandler(_ sender: UIButton) {
         monitorBeacons()
+        // Do any additional setup after loading the view, typically from a nib.
     }
     
     func monitorBeacons() {
@@ -31,8 +30,7 @@ class ProximityViewController: UIViewController, CLLocationManagerDelegate {
         if CLLocationManager.isMonitoringAvailable(for:
             CLBeaconRegion.self) {
             // Match all beacons with the specified UUID
-            let proximityUUID = UUID(uuidString:
-                "B9407F30-F5F8-466E-AFF9-25556B57FE6D")
+            let proximityUUID = UUID(uuidString: Constants.VATE_UUID)
             let beaconID = "it.a4smart.beacons"
             
             // Create the region and begin monitoring it.

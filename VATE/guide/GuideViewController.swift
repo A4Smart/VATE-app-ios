@@ -29,8 +29,7 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate {
         os_log("starting monitoring")
         if CLLocationManager.isMonitoringAvailable(for:CLBeaconRegion.self) {
             // Match all beacons with the specified UUID
-            let proximityUUID = UUID(uuidString:
-                "B9407F30-F5F8-466E-AFF9-25556B57FE6D")
+            let proximityUUID = UUID(uuidString: Constants.VATE_UUID)
             let beaconID = "it.a4smart.beacons"
             
             // Create the region and begin monitoring it.
