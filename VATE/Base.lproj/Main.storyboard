@@ -48,11 +48,28 @@
                     <view key="view" contentMode="scaleToFill" id="TFP-AZ-3nF">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="oJA-mc-4Rm">
+                                <rect key="frame" x="0.0" y="44" width="414" height="769"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="qPU-7Q-f4a" firstAttribute="trailing" secondItem="oJA-mc-4Rm" secondAttribute="trailing" id="A82-Nb-Nlg"/>
+                            <constraint firstItem="qPU-7Q-f4a" firstAttribute="bottom" secondItem="oJA-mc-4Rm" secondAttribute="bottom" id="BDL-gX-ki4"/>
+                            <constraint firstItem="oJA-mc-4Rm" firstAttribute="top" secondItem="qPU-7Q-f4a" secondAttribute="top" id="QNk-aU-gy2"/>
+                            <constraint firstItem="oJA-mc-4Rm" firstAttribute="leading" secondItem="qPU-7Q-f4a" secondAttribute="leading" id="wAa-pc-kSh"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="qPU-7Q-f4a"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Guide" id="K4v-k9-f8W"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="textView" destination="oJA-mc-4Rm" id="FMB-ps-d46"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="P5d-Ev-RIZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

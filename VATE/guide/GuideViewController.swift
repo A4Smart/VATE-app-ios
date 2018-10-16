@@ -13,6 +13,8 @@ import os
 class GuideViewController: UIViewController, CLLocationManagerDelegate {
     
     let locationManager = CLLocationManager()
+    let guideFSM = GuideFSM()
+    @IBOutlet weak var textView: UITextView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +23,7 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate {
         // Do any additional setup after loading the view, typically from a nib.
         monitorBeacons()
     }
+    
     
     func monitorBeacons() {
         os_log("starting monitoring")
@@ -56,48 +59,27 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate {
             let major = CLBeaconMajorValue(truncating: nearestBeacon.major)
             let minor = CLBeaconMinorValue(truncating: nearestBeacon.minor)
             
-            if(major == 42) {
+            if(major == 42 || major == 10000) {
                 if (nearestBeacon.proximity == .near || nearestBeacon.proximity == .immediate) {
-                        guide(minor: Int(minor))
-                }
-                else {
-                    os_log("detection: minor: %d, proximity: %d", type: .debug, minor, nearestBeacon.proximity.rawValue )
+                    guide(major: Int(major), minor: Int(minor))
                 }
             }
             
         }
     }
     
-    let DEWAY = [1, 2, 3, 4]
-    
-    var dir = 0
-    var actPos = 0;
-    
-    func guide(minor : Int) {
-        os_log("guide: minor: %d", type: .debug, minor)
-        if (dir == 0) {
-            if (minor == DEWAY[0]) {
-                dir = 1
-                os_log("guide: ENTERED THE WAY")
+    private var out = ""
+
+    private func guide(major: Int, minor: Int) {
+        if (!guideFSM.isReady()) {
+            let way = Routing.getRoute(place: major, start: minor)
+            if (way != []) {
+                guideFSM.setWay(way: way)
+                out = ""
             }
-            else if (minor == DEWAY[DEWAY.count - 1]) {
-                actPos = DEWAY.count-1
-                dir = -1
-                os_log("guide: ENTERED THE YAW")
-            }
-            else {
-                os_log("guide: NOT PART OF WAY")
-            }
-        } else if (minor == DEWAY[actPos]) {
-            os_log("nextStep: NOT MOVING")
-        } else if (minor == DEWAY[0] || minor == DEWAY[DEWAY.count - 1]) {
-            dir = 0
-            os_log("guide: ARRIVED")
-        } else if (minor == DEWAY[actPos + dir]) {
-            actPos += dir
-            os_log("nextStep: RIGHT DIRECTION")
-        }  else {
-            os_log("nextStep: WRONG")
+        } else {
+            out += "minor: \(minor), guide: \(guideFSM.nextMove(minor: minor))\n"
+            textView.text = out;
         }
     }
     
