@@ -9,6 +9,12 @@
 import Foundation
 
 class GuideFSM {
+    public static let WRONG = -1
+    public static let IDLING = 0
+    public static let STARTING = 1
+    public static let NEXT = 2
+    public static let END = 3
+    
     private var way : [Int]
     private var position : Int
     private var last : Int
@@ -25,27 +31,23 @@ class GuideFSM {
         last = way.endIndex - 1
     }
 
-    public func nextMove (minor : Int) -> String {
-        var out = "WRONG"
-
+    public func nextMove (minor : Int) -> Int {
         if (position < 0) {
             if (minor == way[0]) {
                 position = 0
-                out = "ENTERED THE WAY"
+                return GuideFSM.STARTING
             }
         } else if (position == last) {
-            out = "ARRIVED"
+            return GuideFSM.END
         } else {
             if (minor == way[position]) {
-                out = "NOT MOVING"
+                return GuideFSM.IDLING
             } else if (minor == way[position + 1]) {
                 position+=1
-                out = "RIGHT DIRECTION"
+                return GuideFSM.NEXT
             }
         }
-
-        return out
-
+        return GuideFSM.WRONG
     }
 
     public func isReady() -> Bool {

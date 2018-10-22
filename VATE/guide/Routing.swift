@@ -2,8 +2,8 @@
 //  Routing.swift
 //  VATE
 //
-// Created by Marco Fincato on 15/10/2018.
-// Copyright (c) 2018 A4Smart. All rights reserved.
+//  Created by Marco Fincato on 15/10/2018.
+//  Copyright © 2018 A4Smart. All rights reserved.
 //
 
 import Foundation

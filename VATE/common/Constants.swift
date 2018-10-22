@@ -15,4 +15,6 @@ class Constants {
     //Base URL for the VATE app.
     public static let WEB_ADDRESS = "https://vateapp.eu/"
     
+    public static let TTS_SCRIPT = "document.getElementById('tts_text').innerHTML"
+    
 }
