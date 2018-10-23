@@ -26,6 +26,7 @@ class GuideViewController: UIViewController, WKUIDelegate, CLLocationManagerDele
         webView = WKWebView(frame: .zero, configuration: webConfiguration)
         webView.uiDelegate = self
         webView.scrollView.delegate = self
+        webView.navigationDelegate = self;
         view = webView
         
         //setup location
