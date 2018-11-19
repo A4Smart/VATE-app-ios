@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import os
 
 class Dijkstra {
     private final var predecessors : [Vertex: Vertex]
@@ -25,22 +26,28 @@ class Dijkstra {
         distances.updateValue(0, forKey: current)
         while (!pq.isEmpty) {
             current = pq.min(by: { (o1, o2) -> Bool in
-                distances[o1] ?? Int.max < distances[o2] ?? Int.max
+                getActDistance(vertex: o1) < getActDistance(vertex: o2)
             })!
-            var adjacent = current.adjacent
+            pq.remove(at: pq.firstIndex(of: current)!)
+            let adjacent = current.adjacent
             
             for edge in adjacent {
                 let target = edge.value.destination
-                let oldDist = distances[target] ?? Int.max
-                let newDist = distances[current] ?? Int.max + adjacent[target.name]!.weight
+                let oldDist = getActDistance(vertex: target)
+                let tempbrtt = getActDistance(vertex: source)
+                let newDist = (tempbrtt == Int.max) ? Int.max : tempbrtt
                 
                 if (oldDist > newDist) {
                     distances.updateValue(newDist, forKey: target)
-                    predecessors.updateValue(source, forKey: target)
+                    predecessors.updateValue(current, forKey: target)
                     pq.append(target)
                 }
             }
         }
+    }
+    
+    func getActDistance(vertex: Vertex) -> Int {
+        return distances[vertex] ?? Int.max
     }
     
     func getPath(target: Vertex) -> [Vertex] {

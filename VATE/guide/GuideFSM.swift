@@ -15,9 +15,10 @@ class GuideFSM {
     public static let NEXT = 2
     public static let END = 3
     
-    private var way : [Int]
+    private var way : [Vertex]
     private var position : Int
     private var last : Int
+    private var graph : Graph?
     
     init() {
         way = []
@@ -25,24 +26,25 @@ class GuideFSM {
         last = 0
     }
 
-    public func setWay(way : [Int]) {
-        self.way = way
+    public func findWay(graph : Graph, from: Int, to: Int) {
+        self.graph = graph
+        self.way = graph.getShortestPath(from: from, to: to)
         position = -1
         last = way.endIndex - 1
     }
 
     public func nextMove (minor : Int) -> Int {
         if (position < 0) {
-            if (minor == way[0]) {
+            if (minor == way[0].name) {
                 position = 0
                 return GuideFSM.STARTING
             }
         } else if (position == last) {
             return GuideFSM.END
         } else {
-            if (minor == way[position]) {
+            if (minor == way[position].name) {
                 return GuideFSM.IDLING
-            } else if (minor == way[position + 1]) {
+            } else if (minor == way[position + 1].name) {
                 position+=1
                 return GuideFSM.NEXT
             }
@@ -50,8 +52,16 @@ class GuideFSM {
         return GuideFSM.WRONG
     }
 
-    public func isReady() -> Bool {
+    var ready: Bool {
         return way != [] && position < last
     }
     
+    var url: String {
+        return way[position].uri + "24"
+    }
+    
+    var indication: String {
+        let edge = graph?.getEdge(from: way[position], to: way[position+1])
+        return Directions.getDirections(edge: edge ?? nil)
+    }
 }

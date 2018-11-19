@@ -16,6 +16,7 @@ class GuideViewController: UIViewController, WKUIDelegate, CLLocationManagerDele
     let locationManager = CLLocationManager()
     let guideFSM = GuideFSM()
     let tts = AVSpeechSynthesizer()
+    var graph : Graph?
     @IBOutlet var webView: WKWebView!
     
     override func viewDidLoad() {
@@ -49,6 +50,7 @@ class GuideViewController: UIViewController, WKUIDelegate, CLLocationManagerDele
                     self.tts.stopSpeaking(at: AVSpeechBoundary.immediate)
                 }
                 self.tts.speak(AVSpeechUtterance(string: text))
+                self.tts.speak(AVSpeechUtterance(string: self.guideFSM.indication))
             }
         }
     }
@@ -85,22 +87,25 @@ class GuideViewController: UIViewController, WKUIDelegate, CLLocationManagerDele
     // checks if a guide FSM is created and if a route is defined,
     // then asks the FSM for the next move, and eventually calls load
     private func guide(major: Int, minor: Int) {
-        if (!guideFSM.isReady()) {
-            let way = Routing.getRoute(place: major, start: minor)
-            if (way != []) {
-                guideFSM.setWay(way: way)
-            }
+        if (!guideFSM.ready) {
+            graph = Routing.getGraph(place: major)
+            
+            // TEMPORARY WORKAROUND
+            let destination = (minor == 28) ? 1 : 28
+            // END TEMPORARY WORKAROUND
+            
+            guideFSM.findWay(graph: graph!, from: minor, to: destination)
         } else {
             let act = guideFSM.nextMove(minor: minor)
             if (act == GuideFSM.NEXT || act == GuideFSM.STARTING) {
-                load(major: major, minor: minor)
+                load(url: guideFSM.url)
             }
         }
     }
     
     // starts loading the webview
-    private func load(major: Int, minor: Int) {
-        let myURL = URL(string:"\(Constants.WEB_ADDRESS)\(major)_\(minor)24")
+    private func load(url: String) {
+        let myURL = URL(string: url)
         let myRequest = URLRequest(url: myURL!)
         webView.load(myRequest)
     }

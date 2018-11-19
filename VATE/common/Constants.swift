@@ -17,4 +17,6 @@ class Constants {
     
     public static let TTS_SCRIPT = "document.getElementById('tts_text').innerHTML"
     
+    public static let GRAPH_ADDRESS = "https://raw.githubusercontent.com/A4Smart/VATE-graphs/master/"
+    
 }

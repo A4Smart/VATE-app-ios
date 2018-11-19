@@ -31,4 +31,9 @@ class Vertex : Hashable{
         hasher.combine(name)
         hasher.combine(uri)
     }
+    
+    var description: String {
+        return "Name: \(name)"
+    }
+    
 }

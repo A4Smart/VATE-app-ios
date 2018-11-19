@@ -27,4 +27,14 @@ class Graph {
     func getVertex(name: Int) -> Vertex {
         return vertexes[name]!
     }
+    
+    func getEdge(from: Vertex, to: Vertex) -> Edge? {
+        return vertexes[from.name]?.adjacent[to.name]
+    }
+    
+    func getShortestPath(from: Int, to: Int) -> [Vertex] {
+        let dijkstra = Dijkstra()
+        dijkstra.execute(source: vertexes[from]!)
+        return dijkstra.getPath(target: vertexes[to]!)
+    }
 }
