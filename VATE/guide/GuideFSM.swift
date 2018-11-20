@@ -52,7 +52,7 @@ class GuideFSM {
         return GuideFSM.WRONG
     }
 
-    var ready: Bool {
+    var isReady: Bool {
         return way != [] && position < last
     }
     

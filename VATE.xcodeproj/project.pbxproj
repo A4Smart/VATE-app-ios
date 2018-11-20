@@ -109,6 +109,7 @@
 			children = (
 				A95C780B21A40A290047092A /* Parser.swift */,
 				A95C780D21A40A650047092A /* Retriever.swift */,
+				62DD2CD0EA2DB45961B772C3 /* Routing.swift */,
 			);
 			path = route;
 			sourceTree = "<group>";
@@ -181,7 +182,6 @@
 				A95C780A21A40A190047092A /* route */,
 				A98513DF2170DFBF00827453 /* GuideViewController.swift */,
 				A9C4476D2174E8570007973D /* GuideFSM.swift */,
-				62DD2CD0EA2DB45961B772C3 /* Routing.swift */,
 				A9B48EC621A308FC00024CE8 /* Directions.swift */,
 			);
 			path = guide;

@@ -3,7 +3,7 @@
 //  VATE
 //
 //  Created by Marco Fincato on 12/10/2018.
-//  Copyright © 2018 A4Smart. All rights reserved.
+//  Copyright © 2018 Marco Fincato. All rights reserved.
 //
 
 import UIKit
@@ -12,7 +12,7 @@ import AVFoundation
 import WebKit
 import os
 
-class GuideViewController: UIViewController, WKUIDelegate, CLLocationManagerDelegate, WKNavigationDelegate {
+class GuideViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate, WKNavigationDelegate, UIScrollViewDelegate {
     let locationManager = CLLocationManager()
     let guideFSM = GuideFSM()
     let tts = AVSpeechSynthesizer()
@@ -39,22 +39,6 @@ class GuideViewController: UIViewController, WKUIDelegate, CLLocationManagerDele
     }
     
     
-    // called when webview is loaded
-    // this function will search for the tts text in the webpage,
-    // then it will start reading it
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        webView.evaluateJavaScript(Constants.TTS_SCRIPT) { (result, error) in
-            if result != nil {
-                let text = String(describing: result.unsafelyUnwrapped)
-                if(self.tts.isSpeaking) {
-                    self.tts.stopSpeaking(at: AVSpeechBoundary.immediate)
-                }
-                self.tts.speak(AVSpeechUtterance(string: text))
-                self.tts.speak(AVSpeechUtterance(string: self.guideFSM.indication))
-            }
-        }
-    }
-    
     // starts monitoring for beacon regions
     // when inside a region, ranging is started
     func monitorBeacons() {
@@ -65,29 +49,14 @@ class GuideViewController: UIViewController, WKUIDelegate, CLLocationManagerDele
             
             // Create the region and begin monitoring it.
             let region = CLBeaconRegion(proximityUUID: proximityUUID!, identifier: beaconID)
-            self.locationManager.startRangingBeacons(in: region)
-        }
-    }
-    
-    
-    // called every ranging cycle
-    // if a near beacon is found, send value to guide function
-    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        if beacons.count > 0 {
-            let nearestBeacon = beacons[0]
-            let major = CLBeaconMajorValue(truncating: nearestBeacon.major)
-            let minor = CLBeaconMinorValue(truncating: nearestBeacon.minor)
-            
-            if((major == 42 || major == 10000) && (nearestBeacon.proximity == .near || nearestBeacon.proximity == .immediate)) {
-                guide(major: Int(major), minor: Int(minor))
-            }
+            locationManager.startRangingBeacons(in: region)
         }
     }
     
     // checks if a guide FSM is created and if a route is defined,
     // then asks the FSM for the next move, and eventually calls load
     private func guide(major: Int, minor: Int) {
-        if (!guideFSM.ready) {
+        if (!guideFSM.isReady) {
             graph = Routing.getGraph(place: major)
             
             // TEMPORARY WORKAROUND
@@ -110,12 +79,53 @@ class GuideViewController: UIViewController, WKUIDelegate, CLLocationManagerDele
         webView.load(myRequest)
     }
     
-}
-
-
-// this part is needed to avoid zooming in the webview
-extension GuideViewController: UIScrollViewDelegate {
+    func speak(text: String, indication: String) {
+        if(self.tts.isSpeaking) {
+            self.tts.stopSpeaking(at: AVSpeechBoundary.immediate)
+        }
+        self.tts.speak(AVSpeechUtterance(string: text))
+        self.tts.speak(AVSpeechUtterance(string: indication))
+        
+    }
+    
+    // INHERITED METHODS
+    
+    // called every ranging cycle
+    // if a near beacon is found, send value to guide function
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        if beacons.count > 0 {
+            let nearestBeacon = beacons[0]
+            let major = CLBeaconMajorValue(truncating: nearestBeacon.major)
+            let minor = CLBeaconMinorValue(truncating: nearestBeacon.minor)
+            
+            if((major == 42 || major == 10000) && nearestBeacon.isNear) {
+                guide(major: Int(major), minor: Int(minor))
+            }
+        }
+    }
+    
+    // called when webview is loaded
+    // this function will search for the tts text in the webpage,
+    // then it will start reading it
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        webView.evaluateJavaScript(Constants.TTS_SCRIPT) { (result, error) in
+            if result != nil {
+                let text = String(describing: result.unsafelyUnwrapped)
+                self.speak(text: text, indication: self.guideFSM.indication)
+            }
+        }
+    }
+    
+    // called when the user tries to zoom
+    // if the user begins zooming the function avoid it by disabling the pinch gesture
     func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
         scrollView.pinchGestureRecognizer?.isEnabled = false
+    }
+    
+}
+
+extension CLBeacon {
+    var isNear: Bool {
+        return proximity == .near || proximity == .immediate
     }
 }
