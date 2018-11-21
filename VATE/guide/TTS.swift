@@ -13,11 +13,23 @@ class TTS {
     let tts = AVSpeechSynthesizer()
     
     func speak(text: String, indication: String) {
-        if(self.tts.isSpeaking) {
-            self.tts.stopSpeaking(at: AVSpeechBoundary.immediate)
+        if(tts.isSpeaking) {
+            tts.stopSpeaking(at: AVSpeechBoundary.immediate)
         }
-        self.tts.speak(AVSpeechUtterance(string: text))
-        self.tts.speak(AVSpeechUtterance(string: indication))
-        
+        speakText(string: text)
+        speakIndication(string: indication)
+    }
+    
+    private func speakText(string: String) {
+        let utterance = AVSpeechUtterance(string: string)
+        utterance.pitchMultiplier = 1
+        tts.speak(utterance)
+    }
+    
+    private func speakIndication(string: String) {
+        let utterance = AVSpeechUtterance(string: string)
+        utterance.pitchMultiplier = 1.2
+        utterance.preUtteranceDelay = 0.5 // seconds before the utterance will be spoken
+        tts.speak(utterance)
     }
 }
