@@ -33,18 +33,18 @@ class GuideFSM {
         last = way.endIndex - 1
     }
 
-    public func nextMove (minor : Int) -> Int {
+    public func nextMove (position current: Int) -> Int {
         if (position < 0) {
-            if (minor == way[0].name) {
+            if (current == way[0].name) {
                 position = 0
                 return GuideFSM.STARTING
             }
         } else if (position == last) {
             return GuideFSM.END
         } else {
-            if (minor == way[position].name) {
+            if (current == way[position].name) {
                 return GuideFSM.IDLING
-            } else if (minor == way[position + 1].name) {
+            } else if (current == way[position + 1].name) {
                 position+=1
                 return GuideFSM.NEXT
             }

@@ -13,10 +13,9 @@ import os
 
 class GuideViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate, WKNavigationDelegate, UIScrollViewDelegate {
     let locationManager = CLLocationManager()
-    let guideFSM = GuideFSM()
-    var graph : Graph?
     @IBOutlet var webView: WKWebView!
     
+    let guide = Guide()
     let tts = TTS()
     
     override func viewDidLoad() {
@@ -38,7 +37,6 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate, WKUIDele
         monitorBeacons()
     }
     
-    
     // starts monitoring for beacon regions
     // when inside a region, ranging is started
     func monitorBeacons() {
@@ -53,21 +51,18 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate, WKUIDele
         }
     }
     
-    // checks if a guide FSM is created and if a route is defined,
-    // then asks the FSM for the next move, and eventually calls load
-    private func guide(major: Int, minor: Int) {
-        if (!guideFSM.isReady) {
-            graph = Routing.getGraph(place: major)
+    // called every ranging cycle
+    // if a near beacon is found, send value to guide function
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        if beacons.count > 0 {
+            let nearest = beacons[0]
+            let major = nearest.major.intValue
+            let minor = nearest.minor.intValue
             
-            // TEMPORARY WORKAROUND
-            let destination = (minor == 28) ? 1 : 28
-            // END TEMPORARY WORKAROUND
-            
-            guideFSM.findWay(graph: graph!, from: minor, to: destination)
-        } else {
-            let act = guideFSM.nextMove(minor: minor)
-            if (act == GuideFSM.NEXT || act == GuideFSM.STARTING) {
-                load(url: guideFSM.url)
+            if(nearest.isGuidance && nearest.isNear) {
+                if guide.update(major: major, minor: minor) {
+                    load(url: guide.url)
+                }
             }
         }
     }
@@ -79,22 +74,6 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate, WKUIDele
         webView.load(myRequest)
     }
     
-    // INHERITED METHODS
-    
-    // called every ranging cycle
-    // if a near beacon is found, send value to guide function
-    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        if beacons.count > 0 {
-            let nearest = beacons[0]
-            let major = nearest.major.intValue
-            let minor = nearest.minor.intValue
-            
-            if(nearest.isGuidance && nearest.isNear) {
-                guide(major: major, minor: minor)
-            }
-        }
-    }
-    
     // called when webview is loaded
     // this function will search for the tts text in the webpage,
     // then it will start reading it
@@ -102,7 +81,7 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate, WKUIDele
         webView.evaluateJavaScript(Constants.TTS_SCRIPT) { (result, error) in
             if result != nil {
                 let text = String(describing: result.unsafelyUnwrapped)
-                self.tts.speak(text: text, indication: self.guideFSM.indication)
+                self.tts.speak(text: text, indication: self.guide.indication)
             }
         }
     }
