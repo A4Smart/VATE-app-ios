@@ -8,16 +8,16 @@
 
 import UIKit
 import CoreLocation
-import AVFoundation
 import WebKit
 import os
 
 class GuideViewController: UIViewController, CLLocationManagerDelegate, WKUIDelegate, WKNavigationDelegate, UIScrollViewDelegate {
     let locationManager = CLLocationManager()
     let guideFSM = GuideFSM()
-    let tts = AVSpeechSynthesizer()
     var graph : Graph?
     @IBOutlet var webView: WKWebView!
+    
+    let tts = TTS()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,15 +79,6 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate, WKUIDele
         webView.load(myRequest)
     }
     
-    func speak(text: String, indication: String) {
-        if(self.tts.isSpeaking) {
-            self.tts.stopSpeaking(at: AVSpeechBoundary.immediate)
-        }
-        self.tts.speak(AVSpeechUtterance(string: text))
-        self.tts.speak(AVSpeechUtterance(string: indication))
-        
-    }
-    
     // INHERITED METHODS
     
     // called every ranging cycle
@@ -111,7 +102,7 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate, WKUIDele
         webView.evaluateJavaScript(Constants.TTS_SCRIPT) { (result, error) in
             if result != nil {
                 let text = String(describing: result.unsafelyUnwrapped)
-                self.speak(text: text, indication: self.guideFSM.indication)
+                self.tts.speak(text: text, indication: self.guideFSM.indication)
             }
         }
     }
