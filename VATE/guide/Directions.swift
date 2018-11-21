@@ -16,10 +16,14 @@ class Directions {
     private static let KEEP = "prosegui dritto."
     private static let INVERSION = "torna indietro."
     
-    
+    public static var heading = 0
     
     public static func getDirections(edge: Edge?) -> String{
-        let dir = edge?.dir ?? 1000
+        var dir = edge?.dir ?? 1000
+        
+        if dir < 360 {
+            dir = (dir + heading)%360
+        }
         
         switch dir {
         case 315..<360, 0..<45:

@@ -20,6 +20,7 @@ class Guide {
             
             // TEMPORARY WORKAROUND
             let destination = (position == 28) ? 1 : 28
+            Directions.heading = (position == 28) ? 180 : 0
             // END TEMPORARY WORKAROUND
             
             guideFSM.findWay(graph: graph!, from: position, to: destination)
