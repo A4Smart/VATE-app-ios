@@ -92,6 +92,13 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate, WKUIDele
         scrollView.pinchGestureRecognizer?.isEnabled = false
     }
     
+    // event triggered when the device is shaken
+    // if TTS is speaking stops speaking text and skips to direction indications
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            tts.skipText()
+        }
+    }
 }
 
 extension CLBeacon {
