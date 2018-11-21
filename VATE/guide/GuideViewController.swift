@@ -94,12 +94,12 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate, WKUIDele
     // if a near beacon is found, send value to guide function
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         if beacons.count > 0 {
-            let nearestBeacon = beacons[0]
-            let major = CLBeaconMajorValue(truncating: nearestBeacon.major)
-            let minor = CLBeaconMinorValue(truncating: nearestBeacon.minor)
+            let nearest = beacons[0]
+            let major = nearest.major.intValue
+            let minor = nearest.minor.intValue
             
-            if((major == 42 || major == 10000) && nearestBeacon.isNear) {
-                guide(major: Int(major), minor: Int(minor))
+            if(nearest.isGuidance && nearest.isNear) {
+                guide(major: major, minor: minor)
             }
         }
     }
@@ -127,5 +127,9 @@ class GuideViewController: UIViewController, CLLocationManagerDelegate, WKUIDele
 extension CLBeacon {
     var isNear: Bool {
         return proximity == .near || proximity == .immediate
+    }
+    
+    var isGuidance: Bool {
+        return [42, 10000].contains(major)
     }
 }
