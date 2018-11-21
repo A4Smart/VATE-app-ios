@@ -23,13 +23,9 @@ class Guide {
             // END TEMPORARY WORKAROUND
             
             guideFSM.findWay(graph: graph!, from: position, to: destination)
-        } else {
-            let act = guideFSM.nextMove(position: position)
-            if (act == GuideFSM.NEXT || act == GuideFSM.STARTING) {
-                return true
-            }
         }
-        return false
+        let act = guideFSM.nextMove(position: position)
+        return act == GuideFSM.NEXT || act == GuideFSM.STARTING
     }
     
     var url : String {

@@ -62,6 +62,7 @@ class GuideFSM {
     
     var indication: String {
         let edge = graph?.getEdge(from: way[position], to: way[position+1])
-        return Directions.getDirections(edge: edge ?? nil)
+        return Directions.getDirections(edge: edge)
     }
+    
 }
